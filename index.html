@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 form-group">
+                <label>Pilih kota</label>
+                <select name="city" id="id_city" class="form-control">
+                    <option value="">-------------</option>
+                    <option value="Jakarta">Jakarta</option>
+                    <option value="Tokyo">Tokyo</option>
+                    <option value="London">London</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <table>
+                    <thead>
+                        <tr>
+                            <td class="city_name col-sm-4"></td>
+                            <td class="col-sm-4">Temperature</td>
+                            <td class="col-sm-4">Variance</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        jQuery(function(){
+            var data_sent = {
+                APPID: '481e3bc28e5264e5607c2b65b449bfc1',
+                mode: 'json',
+                cnt: 5,
+                units: 'metric',
+            };
+            var ajax_url = ' http://api.openweathermap.org/data/2.5/forecast/daily';
+
+            $('#id_city').on('change', function(){
+                var $this = $(this);
+                var $tableContainer = $('table tbody');
+                var $cityName = $('table .city_name');
+                var city = $this.find('option:selected').val();
+                data_sent['q'] = city;
+                $.getJSON(ajax_url, data_sent, function(response){
+                    $tableContainer.find('tr').remove();
+                    console.log(response);
+                    $cityName.text(response.city.name);
+                    var temp_total = 0;
+                    var variance_total = 0;
+                    $.each(response.list, function(i, obj){
+                        var d = new Date(obj.dt);
+                        var month = d.getMonth() + 1;
+                        var date = d.getFullYear() +' - '+ month +' - '+ d.getDate();
+                        var day_temp = obj.temp.day;
+                        var variance_temp = obj.temp.max - obj.temp.min;
+                        temp_total = temp_total + day_temp;
+                        variance_total = variance_total + variance_temp;
+                        var element = '<tr><td>'+ date +'</td><td>'+ day_temp +'C</td><td>'+ variance_temp.toFixed(2) +'C</td></tr>';
+                        $tableContainer.append(element);
+                    });
+                    var temp_avg = temp_total / 5;
+                    var variance_avg = variance_total / 5;
+                    var element = '<tr><td><b>Average</b></td><td><b>'+ temp_avg.toFixed(0) +'C</b></td><td><b>'+ variance_avg.toFixed(2) +'C</b></td></tr>';
+                    $tableContainer.append(element);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

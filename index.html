@@ -59,7 +59,6 @@
                 data_sent['q'] = city;
                 $.getJSON(ajax_url, data_sent, function(response){
                     $tableContainer.find('tr').remove();
-                    console.log(response);
                     $cityName.text(response.city.name);
                     var temp_total = 0;
                     var variance_total = 0;
